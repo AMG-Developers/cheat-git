@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>راهنمای جامع Git و GitHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --paper: #F1F2ED;
+      --paper-alt: #E7E8E1;
+      --card: #FBFBF9;
+      --ink: #12161D;
+      --ink-2: #1C222B;
+      --ink-3: #262E39;
+      --text: #20242B;
+      --text-soft: #5B616B;
+      --text-faint: #8A8F97;
+      --teal: #1E8A76;
+      --teal-soft: #E4F1ED;
+      --amber: #B8791A;
+      --amber-soft: #F7ECDA;
+      --coral: #CD4128;
+      --coral-soft: #FBE7E2;
+      --blue: #3E5FBF;
+      --blue-soft: #E7EAF9;
+      --border: #D9DAD2;
+      --border-soft: #E3E4DD;
+      --radius-s: 6px;
+      --radius-m: 10px;
+      --sidebar-w: 288px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--text);
+      font-family: 'Vazirmatn', sans-serif;
+      line-height: 1.85;
+      font-size: 16px;
+    }
+
+    code,
+    pre,
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ---------- Skip / focus ---------- */
+    a {
+      color: var(--teal);
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
+
+    /* ---------- Top bar (mobile) ---------- */
+    .topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--ink);
+      color: #fff;
+      padding: 14px 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar strong {
+      font-size: 15px;
+    }
+
+    #navToggle {
+      background: var(--ink-2);
+      color: #fff;
+      border: 1px solid #333c48;
+      border-radius: var(--radius-s);
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ---------- Sidebar ---------- */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--ink);
+      color: #C9CDD4;
+      padding: 26px 20px 60px;
+      z-index: 30;
+      border-left: 1px solid #262d38;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .brand svg {
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .brand-text span {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8890a0;
+      margin-top: 2px;
+    }
+
+    #sidebar nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-group-label {
+      font-size: 11.5px;
+      color: #69707d;
+      margin: 18px 0 8px;
+      padding-right: 2px;
+    }
+
+    .nav-group-label:first-child {
+      margin-top: 0;
+    }
+
+    #sidebar a {
+      color: #AEB4BF;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 7px 10px;
+      border-radius: var(--radius-s);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    #sidebar a .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #454e5c;
+      flex-shrink: 0;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    #sidebar a:hover {
+      background: #1B222B;
+      color: #fff;
+    }
+
+    #sidebar a.active {
+      background: #182027;
+      color: #fff;
+    }
+
+    #sidebar a.active .dot {
+      background: var(--teal);
+      transform: scale(1.35);
+    }
+
+    #sidebar a.highlight {
+      color: #F0C879;
+    }
+
+    #sidebar a.highlight .dot {
+      background: var(--amber);
+    }
+
+    /* ---------- Layout ---------- */
+    main {
+      margin-right: var(--sidebar-w);
+      max-width: 840px;
+      padding: 0 40px 100px;
+    }
+
+    .hero {
+      padding: 64px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+
+    .hero-graph {
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: 33px;
+      font-weight: 800;
+      line-height: 1.5;
+      margin: 0 0 14px;
+      color: var(--ink);
+    }
+
+    .hero p {
+      font-size: 16.5px;
+      color: var(--text-soft);
+      max-width: 640px;
+      margin: 0 0 18px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 12.5px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: var(--text-soft);
+    }
+
+    section {
+      padding-top: 26px;
+      margin-bottom: 54px;
+      scroll-margin-top: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .section-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .section-head h2 {
+      font-size: 23px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .section-intro {
+      color: var(--text-soft);
+      margin-top: -8px;
+      margin-bottom: 22px;
+    }
+
+    h3 {
+      font-size: 17.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 28px 0 12px;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 16px;
+      padding-right: 22px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .kw {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--paper-alt);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: .92em;
+      direction: ltr;
+      unicode-bidi: embed;
+    }
+
+    /* ---------- Term cards (Section 1) ---------- */
+    .term-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .term-card {
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-m);
+      padding: 16px 18px;
+    }
+
+    .term-card h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-family: 'JetBrains Mono', monospace;
+      direction: ltr;
+      text-align: right;
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .term-card p {
+      font-size: 14.5px;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+
+    .term-card .ex {
+      font-size: 13.5px;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    .term-card .ex b {
+      color: var(--text-soft);
+      font-weight: 600;
+    }
+
+    /* ---------- Terminal / code blocks ---------- */
+    .terminal {
+      background: var(--ink);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+      margin: 14px 0 20px;
+      border: 1px solid #262d38;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      background: var(--ink-2);
+      border-bottom: 1px solid #262d38;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .terminal-dots i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3a4351;
+      display: block;
+    }
+
+    .terminal-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #8992a3;
+      direction: ltr;
+      unicode-bidi: plaintext;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .danger-badge {
+      font-size: 11.5px;
+      background: var(--coral);
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .copy-btn {
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 12px;
+      background: #262e39;
+      color: #C9CDD4;
+      border: 1px solid #333c48;
+      border-radius: var(--radius-s);
+      padding: 4px 11px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    .copy-btn:hover {
+      background: #333c48;
+      color: #fff;
+    }
+
+    .copy-btn.copied {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    .terminal pre {
+      margin: 0;
+      padding: 16px 18px;
+      overflow-x: auto;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .terminal code {
+      color: #E7E9EE;
+      font-size: 14px;
+      line-height: 1.9;
+      white-space: pre;
+    }
+
+    .terminal.danger {
+      border-color: #5a3128;
+    }
+
+    .terminal.danger .terminal-bar {
+      border-bottom-color: #5a3128;
+    }
+
+    /* ---------- Callouts ---------- */
+    .callout {
+      border-radius: var(--radius-m);
+      padding: 14px 18px;
+      margin: 16px 0 20px;
+      font-size: 14.5px;
+      border: 1px solid transparent;
+    }
+
+    .callout.tip {
+      background: var(--teal-soft);
+      border-color: #c3e2da;
+      color: #155245;
+    }
+
+    .callout.note {
+      background: var(--blue-soft);
+      border-color: #cbd3f0;
+      color: #2b3d84;
+    }
+
+    .callout.warn {
+      background: var(--amber-soft);
+      border-color: #eeddb8;
+      color: #7a5210;
+    }
+
+    .callout.danger {
+      background: var(--coral-soft);
+      border-color: #f0c2b6;
+      color: #8c2c17;
+    }
+
+    .callout b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* ---------- Decision table (undo) ---------- */
+    .decision {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-m);
+      padding: 16px 18px;
+      align-items: start;
+    }
+
+    .decision-row .q {
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 14.5px;
+    }
+
+    .decision-row .a {
+      font-size: 14.5px;
+    }
+
+    /* ---------- Tables ---------- */
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead th {
+      background: var(--ink);
+      color: #fff;
+      text-align: right;
+      padding: 12px 14px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--paper-alt);
+    }
+
+    td.cmd {
+      font-family: 'JetBrains Mono', monospace;
+      direction: ltr;
+      text-align: left;
+      color: var(--teal);
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+
+    td.ex {
+      font-family: 'JetBrains Mono', monospace;
+      direction: ltr;
+      text-align: left;
+      font-size: 12.5px;
+      color: var(--text-soft);
+    }
+
+    .risk {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .risk.low {
+      background: var(--teal-soft);
+      color: #155245;
+    }
+
+    .risk.mid {
+      background: var(--amber-soft);
+      color: #7a5210;
+    }
+
+    .risk.high {
+      background: var(--coral-soft);
+      color: #8c2c17;
+    }
+
+    #cheatFilter {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 14.5px;
+      margin-bottom: 14px;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    /* ---------- Scenarios ---------- */
+    .scenario {
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      border-right: 3px solid var(--teal);
+      border-radius: var(--radius-m);
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+
+    .scenario p.q {
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .scenario .terminal {
+      margin: 0;
+    }
+
+    /* ---------- One-page cheat sheet ---------- */
+    #onepage {
+      background: var(--ink);
+      border-radius: 16px;
+      padding: 36px 34px 30px;
+      color: #E7E9EE;
+    }
+
+    #onepage .section-head h2,
+    #onepage .section-num {
+      color: #fff;
+    }
+
+    #onepage .section-num {
+      background: var(--teal);
+    }
+
+    #onepage .section-intro {
+      color: #8992a3;
+    }
+
+    .op-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    #printBtn {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-s);
+      padding: 8px 16px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+
+    .op-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .op-col h4 {
+      font-size: 13px;
+      color: #F0C879;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    .op-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid #262d38;
+      font-size: 13.5px;
+    }
+
+    .op-item:last-child {
+      border-bottom: none;
+    }
+
+    .op-item .c {
+      font-family: 'JetBrains Mono', monospace;
+      direction: ltr;
+      color: #E7E9EE;
+      font-size: 13px;
+    }
+
+    .op-item .l {
+      color: #8992a3;
+      flex-shrink: 0;
+    }
+
+    /* ---------- Daily workflow ---------- */
+    .flow {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: flow;
+    }
+
+    .flow li {
+      counter-increment: flow;
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-soft);
+      align-items: flex-start;
+    }
+
+    .flow li:last-child {
+      border-bottom: none;
+    }
+
+    .flow li::before {
+      content: counter(flow);
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .flow .fbody {
+      padding-top: 3px;
+    }
+
+    .flow .fbody b {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .flow .fbody span {
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+
+    .flow .fbody code {
+      background: var(--paper-alt);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: .9em;
+      direction: ltr;
+      display: inline-block;
+    }
+
+    footer {
+      margin-right: var(--sidebar-w);
+      padding: 30px 40px 50px;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width:980px) {
+      .term-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-row {
+        grid-template-columns: 1fr;
+      }
+
+      .op-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width:900px) {
+      .topbar {
+        display: flex;
+      }
+
+      #sidebar {
+        right: 0;
+        transform: translateX(100%);
+        transition: transform .22s ease;
+        box-shadow: 0 0 40px rgba(0, 0, 0, .3);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      main,
+      footer {
+        margin-right: 0;
+      }
+
+      main {
+        padding: 0 20px 80px;
+      }
+
+      footer {
+        padding: 20px 20px 40px;
+      }
+
+      .hero {
+        padding: 34px 0 30px;
+      }
+
+      .hero h1 {
+        font-size: 26px;
+      }
+    }
+
+    /* ---------- Print ---------- */
+    @media print {
+
+      #sidebar,
+      .topbar,
+      .hero,
+      footer,
+      .op-actions {
+        display: none !important;
+      }
+
+      main {
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+
+      section {
+        display: none;
+      }
+
+      #onepage {
+        display: block !important;
+        background: #fff;
+        color: #000;
+        border: none;
+        padding: 0;
+      }
+
+      #onepage .section-num {
+        background: #000;
+      }
+
+      #onepage .section-head h2 {
+        color: #000;
+      }
+
+      #onepage .section-intro {
+        color: #333;
+      }
+
+      .op-item .c,
+      .op-item .l {
+        color: #000;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <strong>راهنمای Git و GitHub</strong>
+    <button id="navToggle">فهرست ☰</button>
+  </div>
+
+  <aside id="sidebar">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <circle cx="7" cy="6" r="3" fill="#1E8A76" />
+        <circle cx="7" cy="24" r="3" fill="#1E8A76" />
+        <circle cx="23" cy="15" r="3" fill="#CD4128" />
+        <path d="M7 9 V21" stroke="#3a4351" stroke-width="2" />
+        <path d="M7 12 C7 15 23 12 23 15" stroke="#3a4351" stroke-width="2" fill="none" />
+      </svg>
+      <div class="brand-text">راهنمای Git و GitHub<span>Windows · VS Code · XAMPP</span></div>
+    </div>
+    <nav>
+      <div class="nav-group-label">شروع</div>
+      <a href="#intro"><i class="dot"></i>مقدمه</a>
+      <a href="#s1"><i class="dot"></i>۱. مفاهیم پایه</a>
+      <a href="#s2"><i class="dot"></i>۲. نصب و تنظیم اولیه</a>
+      <a href="#s3"><i class="dot"></i>۳. شروع پروژه جدید</a>
+      <a href="#s4"><i class="dot"></i>۴. ساخت Repository</a>
+      <a href="#s5"><i class="dot"></i>۵. اتصال Local به GitHub</a>
+
+      <div class="nav-group-label">کار روزمره</div>
+      <a href="#s6"><i class="dot"></i>۶. کار روزمره</a>
+      <a href="#s7"><i class="dot"></i>۷. مشاهده تاریخچه</a>
+      <a href="#s8"><i class="dot"></i>۸. Undo و بازگرداندن</a>
+      <a href="#s9"><i class="dot"></i>۹. Branch</a>
+      <a href="#s10"><i class="dot"></i>۱۰. Conflict</a>
+
+      <div class="nav-group-label">اتصال و ابزار</div>
+      <a href="#s11"><i class="dot"></i>۱۱. Clone</a>
+      <a href="#s12"><i class="dot"></i>۱۲. Remote</a>
+      <a href="#s13"><i class="dot"></i>۱۳. gitignore</a>
+      <a href="#s14"><i class="dot"></i>۱۴. Authentication</a>
+      <a href="#s15"><i class="dot"></i>۱۵. VS Code</a>
+
+      <div class="nav-group-label">مرجع</div>
+      <a href="#s16"><i class="dot"></i>۱۶. Workflow حرفه‌ای</a>
+      <a href="#s17"><i class="dot"></i>۱۷. جدول کامل دستورات</a>
+      <a href="#s18"><i class="dot"></i>۱۸. سناریوهای واقعی</a>
+      <a href="#onepage" class="highlight"><i class="dot"></i>⭐ Cheat Sheet یک‌صفحه‌ای</a>
+      <a href="#daily" class="highlight"><i class="dot"></i>کار روزانه من</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <div class="hero" id="intro">
+      <div class="hero-graph">
+        <svg width="120" height="36" viewBox="0 0 120 36" fill="none">
+          <path d="M10 28 V14 C10 8 16 8 20 8 H60" stroke="#1E8A76" stroke-width="2.5" fill="none" />
+          <path d="M10 28 V32" stroke="#1E8A76" stroke-width="2.5" />
+          <circle cx="10" cy="28" r="4" fill="#F1F2ED" stroke="#1E8A76" stroke-width="2.5" />
+          <circle cx="10" cy="14" r="4" fill="#1E8A76" />
+          <circle cx="60" cy="8" r="4" fill="#CD4128" />
+          <path d="M60 8 H105" stroke="#3a4351" stroke-width="2" stroke-dasharray="1 5" />
+          <circle cx="112" cy="8" r="3" fill="#3a4351" />
+        </svg>
+      </div>
+      <h1>راهنمای جامع و کاربردی Git و GitHub</h1>
+      <p>یک Cheat Sheet حرفه‌ای که از صفر شروع می‌شود و شما را قدم‌به‌قدم تا استفاده حرفه‌ای از Git و GitHub پیش می‌برد؛
+        همراه با مثال‌های واقعی برای پروژه‌های PHP روی XAMPP و ویرایش با VS Code در ویندوز. هر زمان چیزی یادتان رفت،
+        کافی است به بخش مربوطه یا Cheat Sheet یک‌صفحه‌ای در انتها مراجعه کنید.</p>
+      <div class="hero-tags">
+        <span class="tag">Windows</span>
+        <span class="tag">VS Code</span>
+        <span class="tag">XAMPP</span>
+        <span class="tag">PHP · HTML · CSS · JS</span>
+        <span class="tag">مبتدی تا حرفه‌ای</span>
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 1 ===================== -->
+    <section id="s1">
+      <div class="section-head">
+        <div class="section-num">۱</div>
+        <h2>مفاهیم پایه</h2>
+      </div>
+      <p class="section-intro">قبل از هر دستوری، بهتر است این کلمات کلیدی را بشناسید. هرکدام را کوتاه و همراه با یک مثال
+        واقعی توضیح داده‌ایم.</p>
+
+      <div class="term-grid">
+        <div class="term-card">
+          <h4>Git</h4>
+          <p>نرم‌افزاری که روی کامپیوتر شما نصب می‌شود و تغییرات فایل‌های پروژه را در طول زمان ذخیره و مدیریت می‌کند.
+          </p>
+          <p class="ex"><b>مثال:</b> وقتی یک خط کد را اشتباه پاک می‌کنید، با Git می‌توانید به نسخه قبلی فایل برگردید.
+          </p>
+        </div>
+        <div class="term-card">
+          <h4>GitHub</h4>
+          <p>یک سرویس آنلاین که پروژه‌های Git را روی اینترنت میزبانی می‌کند تا با دیگران همکاری کنید و نسخه پشتیبان
+            آنلاین داشته باشید.</p>
+          <p class="ex"><b>مثال:</b> پروژه لوکال <span class="kw">C:\xampp\htdocs\MyProject</span> می‌تواند نسخه آنلاینش
+            در github.com باشد.</p>
+        </div>
+        <div class="term-card">
+          <h4>Git در برابر GitHub</h4>
+          <p>Git یک ابزار است و حتی بدون اینترنت هم کار می‌کند. GitHub یک پلتفرم است که از Git استفاده می‌کند (مشابه
+            GitLab یا Bitbucket).</p>
+          <p class="ex"><b>مثال:</b> می‌توانید Git را فقط روی کامپیوتر خودتان، بدون هیچ اکانت GitHub، استفاده کنید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Repository</h4>
+          <p>پوشه‌ای که Git تاریخچه تغییراتش را دنبال می‌کند؛ به آن «Repo» هم می‌گویند.</p>
+          <p class="ex"><b>مثال:</b> پوشه MyProject شما بعد از اجرای <span class="kw">git init</span> به یک Repository
+            تبدیل می‌شود.</p>
+        </div>
+        <div class="term-card">
+          <h4>Commit</h4>
+          <p>یک «عکس فوری» از وضعیت فعلی فایل‌ها همراه با یک پیام توضیحی.</p>
+          <p class="ex"><b>مثال:</b> <span class="kw">git commit -m "افزودن فرم ورود"</span></p>
+        </div>
+        <div class="term-card">
+          <h4>Push</h4>
+          <p>فرستادن Commitهای ذخیره‌شده روی کامپیوتر شما، به Repository روی GitHub.</p>
+          <p class="ex"><b>مثال:</b> بعد از چند Commit، با <span class="kw">git push</span> آن‌ها را آنلاین می‌کنید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Pull</h4>
+          <p>دریافت آخرین تغییرات از GitHub و ترکیب آن‌ها با فایل‌های روی کامپیوتر شما.</p>
+          <p class="ex"><b>مثال:</b> همکارتان تغییری Push کرده؛ شما با <span class="kw">git pull</span> آن را دریافت
+            می‌کنید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Clone</h4>
+          <p>کپی کردن کامل یک Repository از GitHub روی کامپیوتر شما، همراه با تمام تاریخچه.</p>
+          <p class="ex"><b>مثال:</b> شروع کار روی یک پروژه تیمی موجود در GitHub.</p>
+        </div>
+        <div class="term-card">
+          <h4>Branch</h4>
+          <p>یک مسیر جدا از توسعه پروژه؛ اجازه می‌دهد بدون خراب کردن نسخه اصلی روی چیز جدیدی کار کنید.</p>
+          <p class="ex"><b>مثال:</b> ساخت Branch با نام <span class="kw">feature/navbar</span> برای طراحی یک منوی جدید.
+          </p>
+        </div>
+        <div class="term-card">
+          <h4>Merge</h4>
+          <p>ترکیب کردن تغییرات یک Branch با Branch دیگر.</p>
+          <p class="ex"><b>مثال:</b> بعد از اتمام navbar، آن را در Branch اصلی Merge می‌کنید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Pull Request</h4>
+          <p>درخواستی در GitHub برای این‌که تغییرات یک Branch، بعد از بررسی، وارد Branch اصلی شود.</p>
+          <p class="ex"><b>مثال:</b> در یک پروژه تیمی، قبل از ورود کد به main یک PR باز می‌کنید تا هم‌تیمی‌ها آن را
+            ببینند.</p>
+        </div>
+        <div class="term-card">
+          <h4>Remote</h4>
+          <p>آدرس یک نسخه از Repository که جایی خارج از کامپیوتر شما قرار دارد؛ معمولاً روی GitHub.</p>
+          <p class="ex"><b>مثال:</b> آدرس <span class="kw">https://github.com/USERNAME/MyProject.git</span> یک Remote
+            است.</p>
+        </div>
+        <div class="term-card">
+          <h4>Origin</h4>
+          <p>نامی پیش‌فرض که Git معمولاً به Remote اصلی شما می‌دهد.</p>
+          <p class="ex"><b>مثال:</b> وقتی می‌نویسید <span class="kw">git push origin main</span>، یعنی به همان Remote
+            اصلی بفرست.</p>
+        </div>
+        <div class="term-card">
+          <h4>HEAD</h4>
+          <p>اشاره‌گری که نشان می‌دهد الان دقیقاً روی کدام Commit یا Branch هستید.</p>
+          <p class="ex"><b>مثال:</b> <span class="kw">HEAD~1</span> یعنی یک Commit قبل‌تر از جایی که الان هستید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Staging Area</h4>
+          <p>منطقه‌ای موقت؛ فایل‌هایی که با <span class="kw">git add</span> به آن اضافه می‌شوند برای Commit بعدی
+            آماده‌اند.</p>
+          <p class="ex"><b>مثال:</b> می‌توانید فقط یک فایل را Stage کنید و بقیه را برای بعد بگذارید.</p>
+        </div>
+        <div class="term-card">
+          <h4>Working Directory</h4>
+          <p>همان پوشه پروژه روی کامپیوتر شما که فایل‌ها را می‌بینید و ویرایش می‌کنید.</p>
+          <p class="ex"><b>مثال:</b> پوشه <span class="kw">C:\xampp\htdocs\MyProject</span> همان Working Directory
+            شماست.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 2 ===================== -->
+    <section id="s2">
+      <div class="section-head">
+        <div class="section-num">۲</div>
+        <h2>نصب و تنظیم اولیه Git</h2>
+      </div>
+
+      <h3>بررسی نصب بودن و مشاهده نسخه</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">PowerShell / CMD</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git --version</code></pre>
+      </div>
+      <p>اگر شماره نسخه‌ای مثل <span class="kw">git version 2.4x.x</span> نمایش داده شود، Git نصب است. اگر پیام «not
+        recognized» دیدید، باید Git را از <span class="kw">git-scm.com</span> نصب کنید.</p>
+
+      <h3>تنظیم نام و ایمیل</h3>
+      <p>این اطلاعات در کنار هر Commit ذخیره می‌شود تا مشخص باشد چه کسی آن را ساخته است.</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">PowerShell / CMD</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git config --global user.name "Your Name"
+git config --global user.email "you@example.com"</code></pre>
+      </div>
+
+      <h3>مشاهده تنظیمات فعلی</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">PowerShell / CMD</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git config --list</code></pre>
+      </div>
+
+      <h3>تغییر نام یا ایمیل</h3>
+      <p>کافی است همان دستور <span class="kw">--global</span> را دوباره با مقدار جدید اجرا کنید؛ مقدار قبلی جایگزین
+        می‌شود.</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">PowerShell / CMD</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git config --global user.email "new-email@example.com"</code></pre>
+      </div>
+
+      <h3>تفاوت global و local</h3>
+      <div class="callout note">
+        <b>Global در برابر Local</b>
+        با <span class="kw">--global</span> تنظیمات برای همه پروژه‌های Windows شما اعمال می‌شود (در فایل <span
+          class="kw">C:\Users\YourName\.gitconfig</span> ذخیره می‌شود). بدون <span class="kw">--global</span>، تنظیمات
+        فقط برای همان Repository فعلی اعمال می‌شود (در <span class="kw">.git/config</span> همان پروژه). این برای زمانی
+        مفید است که مثلاً پروژه‌های کاری و شخصی، ایمیل متفاوتی می‌خواهند.
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 3 ===================== -->
+    <section id="s3">
+      <div class="section-head">
+        <div class="section-num">۳</div>
+        <h2>شروع یک پروژه جدید</h2>
+      </div>
+      <p class="section-intro">فرض کنید یک پروژه در مسیر <span class="kw">C:\xampp\htdocs\MyProject</span> دارید که هنوز
+        با Git ردیابی نمی‌شود.</p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git init
+git status
+git add .
+git commit -m "Initial commit"</code></pre>
+      </div>
+
+      <ul>
+        <li><span class="kw">git init</span> — یک پوشه مخفی <span class="kw">.git</span> در پروژه می‌سازد و از همین
+          لحظه، Git شروع به ردیابی تغییرات این پوشه می‌کند.</li>
+        <li><span class="kw">git status</span> — نشان می‌دهد چه فایل‌هایی ردیابی نشده‌اند (Untracked)، تغییر کرده‌اند یا
+          Stage شده‌اند.</li>
+        <li><span class="kw">git add .</span> — همه فایل‌های تغییر‌کرده در پوشه فعلی را به Staging Area اضافه می‌کند.
+        </li>
+        <li><span class="kw">git commit -m "Initial commit"</span> — از وضعیت Stage‌شده یک Commit اول با پیام مشخص
+          می‌سازد.</li>
+      </ul>
+      <div class="callout tip"><b>نکته</b>بعد از هر مرحله، دوباره <span class="kw">git status</span> بزنید تا مطمئن شوید
+        دقیقاً چه اتفاقی افتاده — این عادت خیلی از اشتباهات را از ابتدا می‌گیرد.</div>
+    </section>
+
+    <!-- ===================== SECTION 4 ===================== -->
+    <section id="s4">
+      <div class="section-head">
+        <div class="section-num">۴</div>
+        <h2>ساخت Repository در GitHub</h2>
+      </div>
+
+      <h3>چگونه Repository جدید بسازیم</h3>
+      <p>در GitHub روی دکمه <span class="kw">New repository</span> بزنید، نامی مثل <span class="kw">MyProject</span>
+        انتخاب کنید و Create Repository را بزنید.</p>
+
+      <h3>Public در برابر Private</h3>
+      <p><strong>Public</strong> یعنی همه می‌توانند کد شما را ببینند (خوب برای نمونه‌کار و پروژه‌های متن‌باز).
+        <strong>Private</strong> یعنی فقط شما و افرادی که دعوت کنید دسترسی دارند (مناسب پروژه‌های شخصی یا کاری).</p>
+
+      <h3>چه زمانی README بسازم؟</h3>
+      <div class="callout warn">
+        <b>خیلی مهم</b>
+        اگر پروژه‌ای از قبل روی کامپیوترتان دارید (مثل سناریوی این راهنما)، هنگام ساخت Repository گزینه‌های README،
+        .gitignore و License را <strong>فعال نکنید</strong>. چون این گزینه‌ها یک Commit اولیه در GitHub می‌سازند که با
+        پروژه لوکال شما هم‌تاریخچه نیست و اولین Push شما را با تعارض روبه‌رو می‌کند. اگر پروژه کاملاً خالی و از صفر است،
+        ساختن README هیچ مشکلی ندارد.
+      </div>
+
+      <h3>gitignore. و License</h3>
+      <p><span class="kw">.gitignore</span> فهرستی از فایل‌ها و پوشه‌هایی است که نمی‌خواهید Git آن‌ها را ردیابی کند
+        (جزئیات کامل در بخش ۱۳). <strong>License</strong> مجوزی است که مشخص می‌کند دیگران چگونه اجازه دارند از کد شما
+        استفاده کنند؛ برای پروژه‌های شخصی، <span class="kw">MIT License</span> انتخاب رایجی است.</p>
+    </section>
+
+    <!-- ===================== SECTION 5 ===================== -->
+    <section id="s5">
+      <div class="section-head">
+        <div class="section-num">۵</div>
+        <h2>اتصال پروژه Local به GitHub</h2>
+      </div>
+      <p class="section-intro">سناریو: پروژه شما در <span class="kw">C:\xampp\htdocs\MyProject</span> است و
+        Repository‌تان <span class="kw">https://github.com/USERNAME/MyProject.git</span></p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git remote add origin https://github.com/USERNAME/MyProject.git
+git remote -v
+git branch -M main
+git push -u origin main</code></pre>
+      </div>
+
+      <ul>
+        <li><span class="kw">git remote add origin ...</span> — به Git می‌گوید آدرس Remote اصلی شما (که از این پس نامش
+          <strong>origin</strong> است) این است.</li>
+        <li><span class="kw">git remote -v</span> — آدرس‌های Remote تنظیم‌شده را برای بررسی نشان می‌دهد.</li>
+        <li><span class="kw">git branch -M main</span> — نام Branch فعلی را به <strong>main</strong> تغییر می‌دهد (نام
+          استاندارد Branch اصلی در GitHub).</li>
+        <li><span class="kw">git push -u origin main</span> — Branch لوکال <span class="kw">main</span> را به Remote به
+          نام <span class="kw">origin</span> می‌فرستد؛ فلگ <span class="kw">-u</span> یعنی این دو را به هم «متصل» کن تا
+          دفعات بعد کافی باشد فقط بنویسید <span class="kw">git push</span> یا <span class="kw">git pull</span>.</li>
+      </ul>
+
+      <div class="callout note"><b>Origin و Main دقیقاً چه هستند؟</b><strong>origin</strong> فقط یک اسم مستعار برای آدرس
+        طولانی Repository روی GitHub است — می‌توانستید هر اسم دیگری هم بگذارید. <strong>main</strong> اسم Branch اصلی
+        پروژه شماست؛ همان‌جایی که نسخه پایدار و نهایی کد نگه‌داری می‌شود.</div>
+    </section>
+
+    <!-- ===================== SECTION 6 ===================== -->
+    <section id="s6">
+      <div class="section-head">
+        <div class="section-num">۶</div>
+        <h2>کار روزمره با Git</h2>
+      </div>
+      <p class="section-intro">این پنج دستور، ۹۰٪ کارهای روزانه شما با Git هستند.</p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git status
+git add .
+git add filename
+git commit -m "..."
+git push
+git pull</code></pre>
+      </div>
+
+      <h3>مثال واقعی</h3>
+      <p>فرض کنید فایل <span class="kw">index.php</span> را ویرایش کرده‌اید:</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git status
+git add index.php
+git commit -m "اصلاح فرم ورود کاربر"
+git push</code></pre>
+      </div>
+      <p>اگر همکاری روی همین پروژه کار می‌کند، قبل از شروع کار روزانه بهتر است اول <span class="kw">git pull</span>
+        بزنید تا آخرین نسخه را داشته باشید.</p>
+    </section>
+
+    <!-- ===================== SECTION 7 ===================== -->
+    <section id="s7">
+      <div class="section-head">
+        <div class="section-num">۷</div>
+        <h2>مشاهده تاریخچه</h2>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git log
+git log --oneline
+git log --oneline --graph --all
+git show &lt;commit-hash&gt;
+git diff
+git diff --staged</code></pre>
+      </div>
+
+      <ul>
+        <li><span class="kw">git log</span> — فهرست کامل Commitها با پیام، نویسنده و تاریخ.</li>
+        <li><span class="kw">git log --oneline</span> — نسخه خلاصه؛ هر Commit در یک خط.</li>
+        <li><span class="kw">git log --oneline --graph --all</span> — نمایش گرافیکی Branchها و نحوه Merge شدن آن‌ها؛
+          خیلی مفید برای درک وضعیت پروژه.</li>
+        <li><span class="kw">git show &lt;commit-hash&gt;</span> — جزئیات کامل یک Commit خاص، شامل فایل‌ها و خطوط
+          تغییر‌یافته.</li>
+        <li><span class="kw">git diff</span> — تفاوت فایل‌های تغییر‌کرده اما Stage‌نشده، نسبت به آخرین Commit.</li>
+        <li><span class="kw">git diff --staged</span> — تفاوت فایل‌هایی که با <span class="kw">git add</span> Stage
+          شده‌اند.</li>
+      </ul>
+
+      <div class="callout tip"><b>چطور بفهمم چه فایل‌هایی تغییر کرده‌اند؟</b>ساده‌ترین راه <span class="kw">git
+          status</span> است. برای یک خلاصه آماری از تعداد خطوط تغییر‌یافته در هر فایل، از <span class="kw">git diff
+          --stat</span> استفاده کنید.</div>
+    </section>
+
+    <!-- ===================== SECTION 8 ===================== -->
+    <section id="s8">
+      <div class="section-head">
+        <div class="section-num">۸</div>
+        <h2>برگرداندن تغییرات و Undo</h2>
+      </div>
+      <p class="section-intro">مهم‌ترین سؤال همیشه این است: «الان دقیقاً کجای مسیر هستم؟» جواب، دستور مناسب را مشخص
+        می‌کند.</p>
+
+      <div class="decision">
+        <div class="decision-row">
+          <div class="q">هنوز Commit نکرده‌ام</div>
+          <div class="a">
+            برای دور ریختن تغییرات یک فایل خاص: <span class="kw">git restore filename</span><br>
+            برای دور ریختن همه تغییرات: <span class="kw">git restore .</span><br>
+            برای خارج کردن فایل از Staging (بدون از دست دادن تغییرات): <span class="kw">git restore --staged
+              filename</span>
+          </div>
+        </div>
+        <div class="decision-row">
+          <div class="q">Commit کرده‌ام، ولی Push نکرده‌ام</div>
+          <div class="a">
+            لغو آخرین Commit و نگه‌داشتن تغییرات در Staging: <span class="kw">git reset --soft HEAD~1</span><br>
+            لغو آخرین Commit و نگه‌داشتن تغییرات به‌صورت Unstaged (حالت پیش‌فرض): <span class="kw">git reset --mixed
+              HEAD~1</span><br>
+            لغو آخرین Commit و <strong>حذف کامل</strong> تغییرات ⚠️: <span class="kw">git reset --hard HEAD~1</span>
+          </div>
+        </div>
+        <div class="decision-row">
+          <div class="q">Commit را Push هم کرده‌ام</div>
+          <div class="a">
+            از <span class="kw">git revert &lt;commit-hash&gt;</span> استفاده کنید؛ این دستور یک Commit جدید می‌سازد که
+            تغییرات Commit قبلی را خنثی می‌کند، بدون این‌که تاریخچه را پاک کند — امن برای پروژه‌های اشتراکی.
+          </div>
+        </div>
+      </div>
+
+      <h3>چه زمانی revert بهتر از reset است؟</h3>
+      <p><span class="kw">reset</span> تاریخچه را بازنویسی می‌کند، پس فقط برای Commitهایی مناسب است که هنوز Push
+        نشده‌اند (فقط روی کامپیوتر خودتان هستند). <span class="kw">revert</span> تاریخچه قبلی را دست‌نخورده نگه می‌دارد
+        و یک Commit جدید اضافه می‌کند، پس برای هر چیزی که قبلاً Push یا با دیگران به اشتراک گذاشته شده، انتخاب درست و
+        امن است.</p>
+
+      <div class="terminal danger">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span class="terminal-path">⚠️
+            دستورات خطرناک</span><span class="danger-badge">دقت کنید</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git reset --hard
+git push --force</code></pre>
+      </div>
+      <div class="callout danger">
+        <b>هشدار</b>
+        <span class="kw">git reset --hard</span> تمام تغییرات Commit‌نشده را برای همیشه پاک می‌کند — قابل بازگشت نیست.
+        <span class="kw">git push --force</span> تاریخچه روی GitHub را با نسخه لوکال شما جایگزین می‌کند و ممکن است
+        Commitهای دیگران را پاک کند. اگر باید Force کنید، ترجیحاً از <span class="kw">git push --force-with-lease</span>
+        استفاده کنید؛ این حالت اگر کس دیگری تازه چیزی Push کرده باشد، جلوی از دست رفتن کارش را می‌گیرد.
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 9 ===================== -->
+    <section id="s9">
+      <div class="section-head">
+        <div class="section-num">۹</div>
+        <h2>Branch</h2>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git branch
+git branch branch-name
+git switch branch-name
+git switch -c branch-name
+git checkout branch-name
+git merge branch-name
+git branch -d branch-name</code></pre>
+      </div>
+
+      <ul>
+        <li><span class="kw">git branch</span> — فهرست همه Branchهای موجود، با علامت روی Branch فعلی.</li>
+        <li><span class="kw">git branch branch-name</span> — ساخت یک Branch جدید (بدون جابه‌جا شدن به آن).</li>
+        <li><span class="kw">git switch branch-name</span> — جابه‌جایی به یک Branch موجود.</li>
+        <li><span class="kw">git switch -c branch-name</span> — ساخت Branch جدید و جابه‌جایی هم‌زمان به آن (معادل قدیمی:
+          <span class="kw">git checkout -b</span>).</li>
+        <li><span class="kw">git checkout branch-name</span> — روش قدیمی‌تر برای جابه‌جایی بین Branchها؛ هنوز رایج است.
+        </li>
+        <li><span class="kw">git merge branch-name</span> — تغییرات <span class="kw">branch-name</span> را وارد Branch
+          فعلی می‌کند.</li>
+        <li><span class="kw">git branch -d branch-name</span> — حذف یک Branch که کامل Merge شده. برای حذف اجباری Branch
+          Merge‌نشده ⚠️ از <span class="kw">-D</span> استفاده کنید.</li>
+      </ul>
+
+      <h3>مثال واقعی: main → development → feature/navbar</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git switch -c development
+git switch -c feature/navbar
+git add .
+git commit -m "افزودن navbar"
+git switch development
+git merge feature/navbar
+git branch -d feature/navbar</code></pre>
+      </div>
+      <p>وقتی <span class="kw">development</span> هم پایدار و آماده شد، همین مسیر Merge را از <span
+          class="kw">main</span> روی <span class="kw">development</span> تکرار می‌کنید.</p>
+    </section>
+
+    <!-- ===================== SECTION 10 ===================== -->
+    <section id="s10">
+      <div class="section-head">
+        <div class="section-num">۱۰</div>
+        <h2>Conflict</h2>
+      </div>
+      <p class="section-intro">وقتی دو Branch یک قسمت از همان فایل را به‌شکل متفاوت تغییر داده باشند، Git نمی‌تواند خودش
+        تصمیم بگیرد کدام درست است — این یعنی Conflict.</p>
+
+      <h3>مراحل رفع تعارض</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git pull
+# فایل تعارض‌دار را باز و اصلاح کنید
+git add .
+git commit
+git push</code></pre>
+      </div>
+      <p>داخل فایل تعارض‌دار، Git بخش‌هایی شبیه این اضافه می‌کند:</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">index.php</span></div>
+        <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+کد نسخه فعلی شما
+=======
+کد نسخه دریافت‌شده از GitHub
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch-name</code></pre>
+      </div>
+      <p>باید تصمیم بگیرید کدام بخش (یا ترکیبی از هر دو) درست است، خطوط <span
+          class="kw">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>، <span class="kw">=======</span> و <span
+          class="kw">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> را کامل پاک کنید، سپس فایل را ذخیره کنید.</p>
+
+      <h3>اگر وارد صفحه Vim شدید</h3>
+      <p>گاهی هنگام <span class="kw">git commit</span> یا <span class="kw">git merge</span>، یک صفحه متنی مثل این باز
+        می‌شود:</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">Vim editor</span></div>
+        <pre><code>Merge branch 'main'...</code></pre>
+      </div>
+      <div class="callout tip"><b>خروج از Vim</b>پیام پیش‌فرض معمولاً همان چیزی است که نیاز دارید؛ کلید <span
+          class="kw">Esc</span> را بزنید و سپس تایپ کنید <span class="kw">:wq</span> و کلید Enter را بزنید تا ذخیره و
+        خارج شوید. اگر خواستید بدون ذخیره خارج شوید: <span class="kw">Esc</span> سپس <span class="kw">:q!</span></div>
+    </section>
+
+    <!-- ===================== SECTION 11 ===================== -->
+    <section id="s11">
+      <div class="section-head">
+        <div class="section-num">۱۱</div>
+        <h2>Clone</h2>
+      </div>
+      <p class="section-intro">برای دریافت یک Repository موجود روی کامپیوتر خودتان (مثلاً روی یک سیستم جدید یا برای
+        همکاری در پروژه‌ای تیمی):</p>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git clone https://github.com/USERNAME/RepoName.git
+cd RepoName
+code .</code></pre>
+      </div>
+      <ul>
+        <li><span class="kw">git clone ...</span> — یک پوشه جدید با نام Repository می‌سازد و کل پروژه + تاریخچه را داخلش
+          کپی می‌کند.</li>
+        <li><span class="kw">cd RepoName</span> — وارد پوشه پروژه می‌شوید.</li>
+        <li><span class="kw">code .</span> — پوشه فعلی را در VS Code باز می‌کند.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SECTION 12 ===================== -->
+    <section id="s12">
+      <div class="section-head">
+        <div class="section-num">۱۲</div>
+        <h2>Remote</h2>
+      </div>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git remote -v
+git remote add origin https://github.com/USERNAME/MyProject.git
+git remote remove origin
+git remote set-url origin https://github.com/USERNAME/NewName.git
+git fetch
+git pull</code></pre>
+      </div>
+      <ul>
+        <li><span class="kw">git remote -v</span> — نشان می‌دهد چه Remoteهایی تنظیم شده و آدرس Fetch/Push هرکدام چیست.
+        </li>
+        <li><span class="kw">git remote add origin</span> — یک Remote جدید با نام <span class="kw">origin</span> اضافه
+          می‌کند.</li>
+        <li><span class="kw">git remote remove origin</span> — Remote به نام <span class="kw">origin</span> را از پروژه
+          حذف می‌کند (پروژه روی GitHub حذف نمی‌شود، فقط اتصال لوکال قطع می‌شود).</li>
+        <li><span class="kw">git remote set-url origin</span> — آدرس یک Remote موجود را تغییر می‌دهد؛ مثلاً وقتی نام
+          Repository عوض شده یا می‌خواهید از HTTPS به SSH سوییچ کنید.</li>
+        <li><span class="kw">git fetch</span> — تغییرات جدید را از Remote دانلود می‌کند اما آن‌ها را با فایل‌های شما
+          Merge <strong>نمی‌کند</strong>؛ راه امنی برای دیدن چه چیزی جدید است، قبل از Pull واقعی.</li>
+        <li><span class="kw">git pull</span> — دقیقاً معادل <span class="kw">fetch</span> + <span
+            class="kw">merge</span> در یک مرحله.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SECTION 13 ===================== -->
+    <section id="s13">
+      <div class="section-head">
+        <div class="section-num">۱۳</div>
+        <h2>.gitignore</h2>
+      </div>
+      <p class="section-intro"><span class="kw">.gitignore</span> فایلی متنی در ریشه پروژه است که به Git می‌گوید کدام
+        فایل‌ها و پوشه‌ها را اصلاً ردیابی نکند — مثل فایل‌های حساس، کش، یا وابستگی‌های حجیم.</p>
+
+      <h3>نمونه .gitignore برای پروژه PHP + XAMPP</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">.gitignore</span><button class="copy-btn">کپی</button></div>
+        <pre><code># محیط و تنظیمات حساس
+.env
+config.php
+wp-config.php
+
+# وابستگی‌ها
+/vendor/
+node_modules/
+
+# لاگ‌های سرور لوکال
+*.log
+error_log
+
+# کش و فایل‌های موقت
+*.cache
+*.tmp
+/tmp/
+
+# دامپ دیتابیس
+*.sql
+
+# فایل‌های سیستم‌عامل و ادیتور
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/</code></pre>
+      </div>
+      <p>موارد بالا شامل تنظیمات حساس (رمز دیتابیس در <span class="kw">.env</span> یا <span
+          class="kw">config.php</span>)، وابستگی‌های قابل نصب مجدد، فایل‌های لاگ و کش سرور، و فایل‌های شخصی
+        ادیتور/سیستم‌عامل است که هیچ‌کدام نباید در Repository عمومی باشند.</p>
+
+      <div class="callout danger">
+        <b>اگر یک فایل حساس قبلاً Commit و Push شده باشد</b>
+        فقط اضافه کردن آن به <span class="kw">.gitignore</span> کافی نیست — فایل همچنان در تاریخچه قدیمی Git باقی
+        می‌ماند. مراحل درست:
+      </div>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+            class="terminal-path">C:\xampp\htdocs\MyProject&gt;</span><button class="copy-btn">کپی</button></div>
+        <pre><code>git rm --cached .env
+# سپس .env را به .gitignore اضافه کنید
+git commit -m "Remove .env from tracking"
+git push</code></pre>
+      </div>
+      <p><span class="kw">git rm --cached</span> فایل را از ردیابی Git خارج می‌کند اما نسخه لوکال را روی کامپیوتر شما
+        دست‌نخورده نگه می‌دارد.</p>
+      <div class="callout warn"><b>نکته امنیتی مهم</b>این کار فایل را فقط از Commitهای بعدی حذف می‌کند؛ در Commitهای
+        قدیمی هنوز قابل مشاهده است. اگر رمز یا کلید واقعی داخل آن فایل بوده و Repository عمومی است، آن را
+        <strong>لو‌رفته (Compromised)</strong> در نظر بگیرید و هرچه سریع‌تر رمز/کلید را عوض کنید. برای پاک کردن کامل از
+        تاریخچه به ابزارهای پیشرفته‌ای مثل <span class="kw">git filter-repo</span> یا BFG Repo-Cleaner نیاز دارید که
+        تاریخچه را کامل بازنویسی می‌کنند (مثل Force Push، نیازمند هماهنگی با تیم).</div>
+    </section>
+
+    <!-- ===================== SECTION 14 ===================== -->
+    <section id="s14">
+      <div class="section-head">
+        <div class="section-num">۱۴</div>
+        <h2>GitHub Authentication</h2>
+      </div>
+
+      <h3>HTTPS در برابر SSH</h3>
+      <p><strong>HTTPS</strong> با نام کاربری و یک Personal Access Token (به‌جای رمز عبور واقعی، چون GitHub دیگر رمز
+        ساده را قبول نمی‌کند) وارد می‌شوید؛ ساده‌تر برای شروع. <strong>SSH</strong> از یک جفت کلید (خصوصی/عمومی) استفاده
+        می‌کند و بعد از تنظیم اولیه، دیگر لازم نیست چیزی وارد کنید؛ برای استفاده روزانه سنگین رایج‌تر است.</p>
+
+      <h3>روش پیشنهادی برای Windows + VS Code</h3>
+      <p>وقتی Git for Windows را نصب می‌کنید، ابزار <strong>Git Credential Manager</strong> هم همراهش نصب می‌شود. با روش
+        HTTPS، اولین باری که <span class="kw">git push</span> می‌زنید، یک پنجره مرورگر برای ورود به GitHub باز می‌شود؛
+        بعد از ورود، دفعات بعدی دیگر چیزی از شما نمی‌پرسد. برای اکثر کاربران مبتدی، همین روش ساده‌ترین و کافی‌ترین گزینه
+        است.</p>
+
+      <div class="callout note">
+        <b>در صورت نیاز به SSH</b>
+        اگر بعداً خواستید از SSH استفاده کنید: <span class="kw">ssh-keygen -t ed25519 -C "email@example.com"</span> برای
+        ساخت کلید، سپس کلید عمومی را در بخش <span class="kw">Settings → SSH and GPG keys</span> حساب GitHub خود اضافه
+        کنید و آدرس Remote را با <span class="kw">git remote set-url origin git@github.com:USERNAME/Repo.git</span> به
+        فرمت SSH تغییر دهید.
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 15 ===================== -->
+    <section id="s15">
+      <div class="section-head">
+        <div class="section-num">۱۵</div>
+        <h2>VS Code + Git</h2>
+      </div>
+      <p class="section-intro">پنل <strong>Source Control</strong> را با کلید میانبر <span class="kw">Ctrl + Shift +
+          G</span> باز کنید.</p>
+      <ul>
+        <li><strong>Stage کردن:</strong> ماوس را روی نام فایل ببرید و آیکون «+» را بزنید؛ یا برای همه فایل‌ها روی «+»
+          کنار عنوان Changes بزنید.</li>
+        <li><strong>Commit کردن:</strong> پیام Commit را در باکس بالای پنل بنویسید و آیکون ✓ (Commit) را بزنید.</li>
+        <li><strong>Push و Pull:</strong> از منوی «...» بالای پنل Source Control، یا با کلیک روی فلش‌های Sync در نوار
+          پایین پنجره VS Code.</li>
+        <li><strong>ساخت Branch جدید:</strong> روی نام Branch فعلی در گوشه پایین‌چپ کلیک کنید و «Create new Branch» را
+          انتخاب کنید.</li>
+        <li><strong>تعویض Branch:</strong> همان قسمت پایین‌چپ را باز کنید و از فهرست، Branch مورد نظر را انتخاب کنید.
+        </li>
+        <li><strong>دیدن Conflict:</strong> فایل‌های دارای تعارض با یک نشانگر مخصوص علامت‌گذاری می‌شوند؛ VS Code
+          دکمه‌های «Accept Current / Accept Incoming / Accept Both» را مستقیم داخل فایل نشان می‌دهد.</li>
+        <li><strong>بررسی تغییرات:</strong> روی هر فایل در پنل Source Control کلیک کنید تا نمای Diff (تفاوت نسخه قدیم و
+          جدید) باز شود.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SECTION 16 ===================== -->
+    <section id="s16">
+      <div class="section-head">
+        <div class="section-num">۱۶</div>
+        <h2>GitHub Workflow حرفه‌ای</h2>
+      </div>
+
+      <h3>Workflow پروژه شخصی</h3>
+      <p><span class="kw">main</span> همیشه پایدار می‌ماند. برای هر قابلیت جدید، یک Branch با نام <span
+          class="kw">feature/نام-قابلیت</span> می‌سازید، روی آن کار می‌کنید و وقتی تمام و تست شد، در <span
+          class="kw">main</span> Merge می‌کنید.</p>
+
+      <h3>Workflow پروژه تیمی</h3>
+      <p>سه لایه رایج: <span class="kw">main</span> (نسخه نهایی و منتشرشده)، <span class="kw">development</span> (محل
+        ترکیب کارهای در حال انجام)، و <span class="kw">feature/*</span> (یک Branch به ازای هر کار). هر عضو تیم روی
+        Branch خودش کار می‌کند، سپس یک Pull Request به سمت <span class="kw">development</span> باز می‌کند.</p>
+
+      <h3>چه زمانی Pull Request بسازم؟</h3>
+      <p>هر وقت قرار است کدی قبل از ورود به یک Branch مهم (<span class="kw">main</span> یا <span
+          class="kw">development</span>) بررسی شود — چه توسط هم‌تیمی‌ها و چه حتی خودتان برای مرور نهایی. PR باعث می‌شود
+        همه تغییرات یک‌جا و قابل بررسی دیده شوند، پیش از این‌که وارد نسخه اصلی پروژه شوند.</p>
+    </section>
+
+    <!-- ===================== SECTION 17 ===================== -->
+    <section id="s17">
+      <div class="section-head">
+        <div class="section-num">۱۷</div>
+        <h2>جدول کامل دستورات ضروری</h2>
+      </div>
+      <p class="section-intro">برای جست‌وجوی سریع، اسم دستور را در کادر زیر تایپ کنید.</p>
+      <input type="text" id="cheatFilter" placeholder="جست‌وجو در دستورات… مثلاً: reset">
+      <div class="table-wrap">
+        <table id="cheatTable">
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>کاربرد</th>
+              <th>مثال</th>
+              <th>میزان خطر</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cmd">git init</td>
+              <td>شروع ردیابی Git در یک پوشه</td>
+              <td class="ex">git init</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git clone</td>
+              <td>کپی کامل یک Repository موجود</td>
+              <td class="ex">git clone URL</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git status</td>
+              <td>نمایش وضعیت فعلی فایل‌ها</td>
+              <td class="ex">git status</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git add</td>
+              <td>افزودن فایل به Staging Area</td>
+              <td class="ex">git add .</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git commit</td>
+              <td>ثبت یک Snapshot از تغییرات</td>
+              <td class="ex">git commit -m "msg"</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git push</td>
+              <td>ارسال Commitها به Remote</td>
+              <td class="ex">git push origin main</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git pull</td>
+              <td>دریافت + ترکیب تغییرات از Remote</td>
+              <td class="ex">git pull</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git fetch</td>
+              <td>دریافت تغییرات بدون Merge</td>
+              <td class="ex">git fetch</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git log</td>
+              <td>مشاهده تاریخچه Commitها</td>
+              <td class="ex">git log --oneline</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git diff</td>
+              <td>مقایسه تغییرات فایل‌ها</td>
+              <td class="ex">git diff --staged</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git show</td>
+              <td>جزئیات یک Commit خاص</td>
+              <td class="ex">git show a1b2c3</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git branch</td>
+              <td>مدیریت Branchها</td>
+              <td class="ex">git branch -d old</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git switch</td>
+              <td>جابه‌جایی بین Branchها</td>
+              <td class="ex">git switch -c new</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git checkout</td>
+              <td>جابه‌جایی Branch / بازیابی فایل</td>
+              <td class="ex">git checkout main</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git merge</td>
+              <td>ترکیب یک Branch با فعلی</td>
+              <td class="ex">git merge feature/x</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git restore</td>
+              <td>لغو تغییرات Commit‌نشده</td>
+              <td class="ex">git restore .</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git reset</td>
+              <td>لغو Commit(ها)ی اخیر</td>
+              <td class="ex">git reset --soft HEAD~1</td>
+              <td><span class="risk high">خطرناک ⚠️</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git revert</td>
+              <td>خنثی کردن یک Commit با Commit جدید</td>
+              <td class="ex">git revert a1b2c3</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git remote</td>
+              <td>مدیریت آدرس‌های Remote</td>
+              <td class="ex">git remote -v</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git stash</td>
+              <td>ذخیره موقت تغییرات بدون Commit</td>
+              <td class="ex">git stash / git stash pop</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git tag</td>
+              <td>علامت‌گذاری یک نسخه/Release</td>
+              <td class="ex">git tag v1.0.0</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git rm</td>
+              <td>حذف فایل از پروژه و ردیابی</td>
+              <td class="ex">git rm old.php</td>
+              <td><span class="risk mid">متوسط</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git mv</td>
+              <td>جابه‌جایی/تغییر نام فایل ردیابی‌شده</td>
+              <td class="ex">git mv a.php b.php</td>
+              <td><span class="risk low">کم</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git clean</td>
+              <td>حذف کامل فایل‌های ردیابی‌نشده</td>
+              <td class="ex">git clean -fd</td>
+              <td><span class="risk high">خطرناک ⚠️</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git reset --hard</td>
+              <td>حذف کامل تغییرات Commit‌نشده</td>
+              <td class="ex">git reset --hard</td>
+              <td><span class="risk high">خطرناک ⚠️</span></td>
+            </tr>
+            <tr>
+              <td class="cmd">git push --force</td>
+              <td>بازنویسی تاریخچه Remote</td>
+              <td class="ex">git push --force-with-lease</td>
+              <td><span class="risk high">خطرناک ⚠️</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 18 ===================== -->
+    <section id="s18">
+      <div class="section-head">
+        <div class="section-num">۱۸</div>
+        <h2>سناریوهای واقعی</h2>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۱. پروژه جدید دارم و می‌خواهم Git را فعال کنم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git init</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۲. می‌خواهم پروژه را برای اولین بار به GitHub بفرستم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git remote add origin https://github.com/USERNAME/Repo.git
+git branch -M main
+git push -u origin main</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۳. یک فایل تغییر کرده و می‌خواهم Push کنم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git add .
+git commit -m "توضیح تغییر"
+git push</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۴. اشتباه کردم و هنوز Commit نکرده‌ام.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git restore filename</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۵. اشتباه کردم و Commit کرده‌ام (ولی هنوز Push نکرده‌ام).</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git reset --soft HEAD~1</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۶. Commit اشتباه را Push هم کرده‌ام.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git revert &lt;commit-hash&gt;
+git push</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۷. می‌خواهم به نسخه قبلی یک فایل برگردم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git log filename
+git checkout &lt;commit-hash&gt; -- filename</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۸. GitHub از من Pull می‌خواهد و Push انجام نمی‌شود.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git pull
+git push</code></pre>
+        </div>
+        <p style="margin-top:10px; font-size:14px; color:var(--text-soft);">اگر هنگام Pull تعارض دیدید، مطابق بخش ۱۰ آن
+          را رفع کنید.</p>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۹. Merge Conflict دارم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git pull
+# فایل را اصلاح کنید
+git add .
+git commit
+git push</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۱۰. می‌خواهم پروژه GitHub را روی یک کامپیوتر جدید دریافت کنم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git clone https://github.com/USERNAME/Repo.git</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۱۱. می‌خواهم قبل از Commit ببینم دقیقاً چه چیزی تغییر کرده.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git status
+git diff</code></pre>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <p class="q">۱۲. می‌خواهم یک قابلیت جدید بسازم بدون این‌که main را خراب کنم.</p>
+        <div class="terminal">
+          <div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span
+              class="terminal-path">cmd</span><button class="copy-btn">کپی</button></div>
+          <pre><code>git switch -c feature/new-thing</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ONE PAGE CHEAT SHEET ===================== -->
+    <section id="onepage">
+      <div class="op-actions"><button id="printBtn">چاپ / ذخیره PDF</button></div>
+      <div class="section-head">
+        <div class="section-num">⭐</div>
+        <h2>Git Cheat Sheet یک‌صفحه‌ای</h2>
+      </div>
+      <p class="section-intro">فقط مهم‌ترین دستورات، برای مرور سریع یا چاپ روی یک برگه.</p>
+      <div class="op-grid">
+        <div class="op-col">
+          <h4>شروع پروژه</h4>
+          <div class="op-item"><span class="l">فعال‌سازی Git</span><span class="c">git init</span></div>
+          <div class="op-item"><span class="l">دریافت پروژه</span><span class="c">git clone URL</span></div>
+          <div class="op-item"><span class="l">اتصال به GitHub</span><span class="c">git remote add origin URL</span>
+          </div>
+          <div class="op-item"><span class="l">اولین ارسال</span><span class="c">git push -u origin main</span></div>
+        </div>
+        <div class="op-col">
+          <h4>روزمره</h4>
+          <div class="op-item"><span class="l">وضعیت فایل‌ها</span><span class="c">git status</span></div>
+          <div class="op-item"><span class="l">افزودن به Stage</span><span class="c">git add .</span></div>
+          <div class="op-item"><span class="l">ثبت تغییرات</span><span class="c">git commit -m "..."</span></div>
+          <div class="op-item"><span class="l">ارسال</span><span class="c">git push</span></div>
+          <div class="op-item"><span class="l">دریافت</span><span class="c">git pull</span></div>
+        </div>
+        <div class="op-col">
+          <h4>تاریخچه</h4>
+          <div class="op-item"><span class="l">خلاصه Commitها</span><span class="c">git log --oneline</span></div>
+          <div class="op-item"><span class="l">نمودار Branchها</span><span class="c">git log --oneline --graph
+              --all</span></div>
+          <div class="op-item"><span class="l">تفاوت فایل‌ها</span><span class="c">git diff</span></div>
+        </div>
+        <div class="op-col">
+          <h4>Undo</h4>
+          <div class="op-item"><span class="l">قبل از Commit</span><span class="c">git restore .</span></div>
+          <div class="op-item"><span class="l">بعد از Commit (نگه‌داشتن)</span><span class="c">git reset --soft
+              HEAD~1</span></div>
+          <div class="op-item"><span class="l">بعد از Push</span><span class="c">git revert HASH</span></div>
+        </div>
+        <div class="op-col">
+          <h4>Branch</h4>
+          <div class="op-item"><span class="l">ساخت + جابه‌جایی</span><span class="c">git switch -c name</span></div>
+          <div class="op-item"><span class="l">جابه‌جایی</span><span class="c">git switch name</span></div>
+          <div class="op-item"><span class="l">ادغام</span><span class="c">git merge name</span></div>
+          <div class="op-item"><span class="l">حذف</span><span class="c">git branch -d name</span></div>
+        </div>
+        <div class="op-col">
+          <h4>پیشرفته</h4>
+          <div class="op-item"><span class="l">ذخیره موقت</span><span class="c">git stash</span></div>
+          <div class="op-item"><span class="l">بازیابی موقت</span><span class="c">git stash pop</span></div>
+          <div class="op-item"><span class="l">تگ نسخه</span><span class="c">git tag v1.0.0</span></div>
+          <div class="op-item"><span class="l">Remoteها</span><span class="c">git remote -v</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DAILY WORKFLOW ===================== -->
+    <section id="daily">
+      <div class="section-head">
+        <div class="section-num">↻</div>
+        <h2>هر روز برای پروژه‌ام چه کار کنم؟</h2>
+      </div>
+      <ol class="flow">
+        <li>
+          <div class="fbody"><b>پروژه را باز کنید</b><span>ترمینال VS Code را در پوشه پروژه باز کنید.</span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>آخرین تغییرات را بگیرید</b><span>مخصوصاً اگر تیمی کار می‌کنید:
+              <code>git pull</code></span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>روی کد کار کنید</b><span>ویرایش، تست و اجرای پروژه روی XAMPP.</span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>وضعیت را بررسی کنید</b><span><code>git status</code> تا ببینید چه چیزی تغییر
+              کرده.</span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>تغییرات را Stage کنید</b><span><code>git add .</code></span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>Commit بگیرید</b><span>با پیامی کوتاه و واضح: <code>git commit -m "..."</code></span>
+          </div>
+        </li>
+        <li>
+          <div class="fbody"><b>ارسال به GitHub</b><span><code>git push</code></span></div>
+        </li>
+        <li>
+          <div class="fbody"><b>در پایان کار روی یک Branch</b><span>اگر روی Branch جداگانه بودید و کار تمام شد، آن را
+              Merge کنید یا یک Pull Request باز کنید.</span></div>
+        </li>
+      </ol>
+    </section>
+
+  </main>
+
+  <footer>راهنمای جامع Git و GitHub — برای مرور سریع، از فهرست کناری یا جست‌وجوی داخل جدول بخش ۱۷ استفاده کنید.</footer>
+
+  <script>
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var codeEl = btn.closest('.terminal').querySelector('code');
+        if (!codeEl) return;
+        var text = codeEl.innerText;
+        navigator.clipboard.writeText(text).then(function () {
+          var old = btn.textContent;
+          btn.textContent = 'کپی شد ✓';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+        }).catch(function () { });
+      });
+    });
+
+    // Mobile sidebar toggle
+    var sidebar = document.getElementById('sidebar');
+    var navToggle = document.getElementById('navToggle');
+    if (navToggle) {
+      navToggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
+    }
+    sidebar.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { sidebar.classList.remove('open'); });
+    });
+
+    // Active section highlight
+    var navLinks = sidebar.querySelectorAll('a');
+    var sections = document.querySelectorAll('main section[id]');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          navLinks.forEach(function (l) { l.classList.remove('active'); });
+          var link = sidebar.querySelector('a[href="#' + entry.target.id + '"]');
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(function (s) { observer.observe(s); });
+
+    // Cheat sheet filter
+    var filterInput = document.getElementById('cheatFilter');
+    if (filterInput) {
+      filterInput.addEventListener('input', function () {
+        var q = filterInput.value.trim().toLowerCase();
+        document.querySelectorAll('#cheatTable tbody tr').forEach(function (row) {
+          row.style.display = row.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+        });
+      });
+    }
+
+    // Print
+    var printBtn = document.getElementById('printBtn');
+    if (printBtn) { printBtn.addEventListener('click', function () { window.print(); }); }
+  </script>
+</body>
+
+</html>
